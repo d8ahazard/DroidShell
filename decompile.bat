@@ -2,6 +2,9 @@
 Setlocal EnableDelayedExpansion
 IF NOT EXIST %1 goto NOFILE
 set PATH=%CD%;%PATH%;
+echo %2
+if "%2"=="-s" goto DJ
+pause
 java -jar %droidroot%\apktool.jar d -b -f %1
 if errorlevel 1 GOTO NOOUT
 for /f "delims=" %%a  in ("%1") do set "Extension=%%~xa"
@@ -44,5 +47,7 @@ if %errorlevel%==1 (
 del %tmp%\tmp.vbs
 goto DONE
 
+:DJ
+dj.bat %1
 
 :DONE
