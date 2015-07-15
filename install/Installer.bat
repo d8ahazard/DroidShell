@@ -139,6 +139,8 @@ Reg.exe add "HKCR\.list" /ve /t REG_SZ /d "newimg" /f
 
 echo HKCR...
 Reg.exe add "HKCR\Applications\decompile.bat\shell\open\command" /ve /t REG_SZ /d "\"%CD%\decompile.bat\" \"%%1\"" /f
+Reg.exe add "HKCR\Applications\decompile.bat\shell\Decompile to Java" /ve /t REG_SZ /d "Compile and Clean" /f
+Reg.exe add "HKCR\Applications\decompile.bat\shell\Decompile to Java\command" /ve /t REG_SZ /d "\"%CD%\decompile.bat\" \"%%1\" \"-s\"" /f
 Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile and Clean" /ve /t REG_SZ /d "Compile and Clean" /f
 Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile and Clean\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-c\"" /f
 Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile and Sign" /ve /t REG_SZ /d "Compile And Sign" /f
