@@ -2,13 +2,11 @@
 Setlocal EnableDelayedExpansion
 IF NOT EXIST %1 goto NOFILE
 set PATH=%CD%;%PATH%;
-echo %2
-if "%2"=="-s" goto DJ
-pause
+if /I "%2"=="-s" goto DJ
 java -jar %droidroot%\apktool.jar d -b -f %1
-if errorlevel 1 GOTO NOOUT
+if errorlevel 1 goto NOOUT
 for /f "delims=" %%a  in ("%1") do set "Extension=%%~xa"
-if /i "%Extension%"==".apk" (echo %~n1 > %~n1.dcp) else (echo %~n1.jar.out > %~n1.dcf)
+if /I "%Extension%"==".apk" (echo %~n1 > %~n1.dcp) else (echo %~n1.jar.out > %~n1.dcf)
 goto DONE
 
 :NOFILE
@@ -48,6 +46,8 @@ del %tmp%\tmp.vbs
 goto DONE
 
 :DJ
+echo Prepare to decompile...to JAVA
+pause
 dj.bat %1
 
 :DONE
