@@ -18,9 +18,14 @@ REM limitations under the License.
 REM
 
 REM call d2j_invoke.bat to setup java environment
-7za e %1 *.dex -y
-call d2j-dex2jar %~dp1\*.dex --force
+java -jar %droidroot%\apktool.jar d -s -f %1
+echo path is %~dp1%1.out
+7za e %1 *.dex -y -o%~dp1%1.out\
+call apktool d -s -f %1
+cd %~dp1%1.out\
+call %droidroot%\d2j-dex2jar .\*.dex --force
 del /Q *.dex
-echo %~dp1
-call jd-cli %~dp1\*-dex2jar.jar -od %~dp1\src\
+call jd-cli %~dp1%1.out\ .\*-dex2jar.jar -od .\src\
 del /Q *-dex2jar.jar
+del /Q *-error.zip
+del /Q .\original
