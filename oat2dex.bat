@@ -1,1 +1,0 @@
-java -jar C:\droidshell\oat2dex.jar smali %1 -o %2
