@@ -48,24 +48,16 @@ if not exist "%programfiles%\OSFMount" (
 	if %PROCESSOR_ARCHITECTURE%==x86 ("%~dp0\osfmount.exe") else ("%~dp0\osfmount_x64.exe")	
 ) else (echo OSFMount already exists.)
 
-echo Adding droidroot to path if needed
-set "addpath"="%programfiles%\OSFMount"
-echo path| find /i "%AddPath%" >NUL
-if errorlevel 1 (
-	set "Path"="%Path%;%AddPath%"
-	setx.exe /m Path "%Path%;%AddPath%"
-) else (echo OSFMount already in path)
+if not exist "%localappdata%\Programs\Python\Python35" (
+	echo Python not found, installing.
+	"%~dp0\python-3.5.1-amd64.exe"
+) else (echo Python already exists.)
 
 
-echo Creating "droidroot" Environment Variable (This takes a minute...)
+echo Creating Environment Variables (This takes a minute...)
 if not "%DROIDROOT%"=="%CD%" (SETX /m droidroot "%CD%")
-echo Adding droidroot to path if needed
 set "addpath"="%DROIDROOT%"
-echo path| find /i "%AddPath%" >NUL
-if errorlevel 1 (
-	set "Path"="%Path%;%AddPath%"
-	setx.exe /m Path "%Path%;%AddPath%"
-) else (echo Droidroot already in path)
+setx.exe Path "%Path%;%DROIDROOT%;%programfiles%\OSFMount"
 
 echo Killing Explorer
 
@@ -242,6 +234,6 @@ DEL "%localappdata%\IconCache.db" /A
 )
 echo Restarting Explorer
 start explorer.exe
-echo Please reboot now.
+echo A reboot may be necessary now.
 pause
 EXIT
