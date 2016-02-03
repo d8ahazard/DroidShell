@@ -1,18 +1,14 @@
-@echo off
 set CYGWIN=nodosfilewarning
 set hideErrors=n
-
-rmdir /S /Q %~dp1\ramdisk
-rmdir /S /Q %~dp1\split_img
-
+set rompath=%~dp1
 %~d0
 cd "%~p0"
 if "%~1" == "" goto noargs
 set "file=%~f1"
-set bin=..\android_win_tools
+set bin=%droidroot%\android_win_tools
 set "errout= "
 if "%hideErrors%" == "y" set "errout=2>nul"
-
+echo Well, this works > C:\droidshell\log.txt
 echo Android Image Kitchen - UnpackImg Script
 echo by osm0sis @ xda-developers
 echo.
@@ -20,12 +16,13 @@ echo.
 echo Supplied image: %~nx1
 echo.
 
-if exist split_img\nul set "noclean=1"
-if exist ramdisk\nul set "noclean=1"
+if exist %rompath%%~n1\split_img\nul set "noclean=1"
+if exist %rompath%%~n1\ramdisk\nul set "noclean=1"
 if not "%noclean%" == "1" goto noclean
 echo Removing old work folders and files . . .
 echo.
-call cleanup.bat
+echo About to call cleanup > C:\droidshell\log.txt
+call cleanup.bat "%rompath%" "%~n1"
 
 :noclean
 echo Setting up work folders . . .
@@ -36,7 +33,7 @@ md ramdisk
 echo Splitting image to "/split_img/" . . .
 echo.
 cd split_img
-%bin%\unpackbootimg -i "%file%"
+%bin%\unpackbootimg -i "%~1"
 if errorlevel == 1 call "%~p0\cleanup.bat" & goto error
 echo.
 %bin%\file -m %bin%\magic *-ramdisk.gz %errout% | %bin%\cut -d: -f2 %errout% | %bin%\cut -d" " -f2 %errout% > "%~nx1-ramdiskcomp"
@@ -59,10 +56,13 @@ if "%compext%" == "" goto error
 if errorlevel == 1 goto error
 echo.
 cd ..
-move ./ramdisk %~dp1\ramdisk
-move ./split_img %~dp1\split_img
-echo %1 > %~dp1%~n1.dci
-
+md %rompath%%~n1\split_img 2> nul
+md %rompath%%~n1\ramdisk 2> nul
+copy %droidroot%\ramdisk %rompath%%~n1\ramdisk
+copy %droidroot%\split_img %rompath%%~n1\split_img
+rd /s /q %droidroot%\ramdisk > nul 2>&1
+rd /s /q %droidroot%\split_img > nul 2>&1
+echo %~dp1%~n1 > %~dp1\%~n1.dci
 echo Done!
 goto end
 
@@ -74,4 +74,4 @@ echo Error!
 
 :end
 echo.
-pause
+

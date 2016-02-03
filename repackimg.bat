@@ -1,8 +1,8 @@
-@echo off
+
 set CYGWIN=nodosfilewarning
 set hideErrors=n
-
-cd "%~dp1"
+set /p rebuildpath=<%1
+cd "%rebuildpath%"
 if not exist split_img\nul goto nofiles
 if not exist ramdisk\nul goto nofiles
 set bin=%droidroot%\android_win_tools
@@ -80,7 +80,7 @@ echo.
 echo Building image . . .
 echo.
 if not "%args%" == "--original" set "ramdisk=--ramdisk ramdisk-new.cpio.%compext%"
-%bin%\mkbootimg --kernel "split_img/%kernel%" %ramdisk% %second% --cmdline "%cmdline%" --board "%board%" --base %base% --pagesize %pagesize% --kernel_offset %kerneloff% --ramdisk_offset %ramdiskoff% %second_offset% --tags_offset %tagsoff% %dtb% -o image-new.img %errout%
+%bin%\mkbootimg --kernel "split_img/%kernel%" %ramdisk% %second% --cmdline "%cmdline%" --board "%board%" --base %base% --pagesize %pagesize% --kernel_offset %kerneloff% --ramdisk_offset %ramdiskoff% %second_offset% --tags_offset %tagsoff% %dtb% -o ..\image-new.img %errout%
 if errorlevel == 1 goto error
 echo %2
 IF "%~2"=="-c" (
@@ -99,13 +99,18 @@ echo Error!
 :CLEANUP
 echo atcleanup
 echo %CD%
-del boot.dci
-del boot.img
+
+
 del ramdisk-new.cpio.gz
 del ramdisk-new.cpio.lzma
 rmdir /S /Q ramdisk
 rmdir /S /Q split_img
 rmdir /S /Q boot.img.out
+cd ..
+rmdir /S /Q %~n1
+del boot.dci
+del boot.img
+
 ren image-new.img boot.img
 
 :DONE
