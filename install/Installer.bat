@@ -57,7 +57,7 @@ if not exist "%localappdata%\Programs\Python\Python35" (
 echo Creating Environment Variables (This takes a minute...)
 if not "%DROIDROOT%"=="%CD%" (SETX /m droidroot "%CD%")
 set "addpath"="%DROIDROOT%"
-setx.exe Path "%Path%;%DROIDROOT%;%programfiles%\OSFMount"
+%droidroot%\install\setenv -a PATH "%PATH%;%droidroot%;%programfiles%\OSFMount"
 
 echo Killing Explorer
 
@@ -117,7 +117,7 @@ ftype nppfile="C:\Program Files (x86)\Notepad++\notepad++.exe %1"
 echo Copying Custom Languages
 copy "%~dp0\UserDefinelang.xml" "%appdata%\Notepad++\UserDefinelang.xml"
 )
-Ftype img_auto_file="%CD%\unpackimg.exe %1"
+Ftype img_auto_file="%CD%\unpackimg.bat %1"
 Ftype newimg="%CD%\undat.exe %1"
 
 echo Importing registry associations
@@ -140,8 +140,8 @@ Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile and Sign\command" /ve
 Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile_sign_clean" /ve /t REG_SZ /d "Compile/Sign/Clean" /f
 Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile_sign_clean\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-c\" \"-s\"" /f
 Reg.exe add "HKCR\Applications\recompile.exe\shell\open\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\"" /f
-Reg.exe add "HKCR\Applications\unpackimg.exe\shell\Mount\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.exe\" \"%%1\" \"-m\"" /f
-Reg.exe add "HKCR\Applications\unpackimg.exe\shell\open\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.exe\" \"%%1\"" /f
+Reg.exe add "HKCR\Applications\unpackimg.bat\shell\Mount\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.bat\" \"%%1\" \"-m\"" /f
+Reg.exe add "HKCR\Applications\unpackimg.bat\shell\open\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.bat\" \"%%1\"" /f
 Reg.exe add "HKCR\Applications\undat.exe\shell\open\command" /ve /t REG_SZ /d "\"%CD%\undat.exe\" \"%%1\"" /f
 
 echo HKCU...
@@ -175,7 +175,7 @@ Reg.exe add "HKCU\SOFTWARE\Classes\dcp_auto_file\shell\open" /ve /t REG_SZ /d "C
 Reg.exe add "HKCU\SOFTWARE\Classes\dcp_auto_file\shell\open\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\"" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\boot.ico,0" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\shell\Mount" /ve /t REG_SZ /d "Mount" /f
-Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\shell\Mount\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.exe\" \"%%1\" \"-m\"" /f
+Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\shell\Mount\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.bat\" \"%%1\" \"-m\"" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\shell\open" /ve /t REG_SZ /d "Compile" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\shell\open\command" /ve /t REG_SZ /d "\"%CD%\repackimg.bat\" \"%%1\"" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\jarfile\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\apk.ico,0" /f
@@ -185,8 +185,8 @@ Reg.exe add "HKCU\SOFTWARE\Classes\newimg\DefaultIcon" /ve /t REG_SZ /d "%CD%\in
 Reg.exe add "HKCU\SOFTWARE\Classes\newimg\shell\open" /ve /t REG_SZ /d "Unpack" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\newimg\shell\open\command" /ve /t REG_SZ /d "\"%CD%\undat.exe\" \"%%1\"" /f
 
-Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.img\OpenWithList" /v "a" /t REG_SZ /d "unpackimg.exe" /f
-Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.img\OpenWithList" /v "b" /t REG_SZ /d "unpackimg.exe" /f
+Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.img\OpenWithList" /v "a" /t REG_SZ /d "unpackimg.bat" /f
+Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.img\OpenWithList" /v "b" /t REG_SZ /d "unpackimg.bat" /f
 Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.img\OpenWithList" /v "MRUList" /t REG_SZ /d "ba" /f
 Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.img\OpenWithProgids" /v "Windows.IsoFile" /t REG_NONE /d "" /f
 echo HKLM...
@@ -220,7 +220,7 @@ Reg.exe add "HKLM\SOFTWARE\Classes\dcp_auto_file\shell\open" /ve /t REG_SZ /d "C
 Reg.exe add "HKLM\SOFTWARE\Classes\dcp_auto_file\shell\open\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\"" /f
 Reg.exe add "HKLM\SOFTWARE\Classes\img_auto_file\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\boot.ico,0" /f
 Reg.exe add "HKLM\SOFTWARE\Classes\img_auto_file\shell\Mount" /ve /t REG_SZ /d "Mount" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\img_auto_file\shell\Mount\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.exe\" \"%%1\" \"-m\"" /f
+Reg.exe add "HKLM\SOFTWARE\Classes\img_auto_file\shell\Mount\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.bat\" \"%%1\" \"-m\"" /f
 Reg.exe add "HKLM\SOFTWARE\Classes\img_auto_file\shell\open" /ve /t REG_SZ /d "Compile" /f
 Reg.exe add "HKLM\SOFTWARE\Classes\img_auto_file\shell\open\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\"" /f
 Reg.exe add "HKLM\SOFTWARE\Classes\newimg\shell\open" /ve /t REG_SZ /d "Unpack" /f
@@ -234,6 +234,6 @@ DEL "%localappdata%\IconCache.db" /A
 )
 echo Restarting Explorer
 start explorer.exe
-echo A reboot may be necessary now.
+echo Success!  A reboot may be necessary now.
 pause
 EXIT
