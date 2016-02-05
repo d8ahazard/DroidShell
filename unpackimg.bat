@@ -58,8 +58,8 @@ echo.
 cd ..
 md %rompath%%~n1\split_img 2> nul
 md %rompath%%~n1\ramdisk 2> nul
-copy %droidroot%\ramdisk %rompath%%~n1\ramdisk
-copy %droidroot%\split_img %rompath%%~n1\split_img
+xcopy %droidroot%\ramdisk %rompath%%~n1\ramdisk /s /e
+xcopy %droidroot%\split_img %rompath%%~n1\split_img /s /e
 rd /s /q %droidroot%\ramdisk > nul 2>&1
 rd /s /q %droidroot%\split_img > nul 2>&1
 echo %~dp1%~n1 > %~dp1\%~n1.dci
