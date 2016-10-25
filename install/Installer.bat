@@ -145,27 +145,14 @@ Reg.exe add "HKCR\.img" /ve /t REG_SZ /d "img_auto_file" /f
 Reg.exe add "HKCR\.jar" /ve /t REG_SZ /d "jarfile" /f
 Reg.exe add "HKCR\.list" /ve /t REG_SZ /d "newimg" /f
 
-echo HKCR...
-Reg.exe add "HKCR\Applications\decompile.bat\shell\open\command" /ve /t REG_SZ /d "\"%CD%\decompile.bat\" \"%%1\"" /f
-Reg.exe add "HKCR\Applications\decompile.bat\shell\Decompile to Java" /ve /t REG_SZ /d "Decompile to Java" /f
-Reg.exe add "HKCR\Applications\decompile.bat\shell\Decompile to Java\command" /ve /t REG_SZ /d "\"%CD%\decompile.bat\" \"%%1\" \"-s\"" /f
-Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile and Clean" /ve /t REG_SZ /d "Compile and Clean" /f
-Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile and Clean\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-c\"" /f
-Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile and Sign" /ve /t REG_SZ /d "Compile And Sign" /f
-Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile and Sign\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-s\"" /f
-Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile_sign_clean" /ve /t REG_SZ /d "Compile/Sign/Clean" /f
-Reg.exe add "HKCR\Applications\recompile.exe\shell\Compile_sign_clean\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-c\" \"-s\"" /f
-Reg.exe add "HKCR\Applications\recompile.exe\shell\open\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\"" /f
-Reg.exe add "HKCR\Applications\unpackimg.bat\shell\Mount\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.bat\" \"%%1\" \"-m\"" /f
-Reg.exe add "HKCR\Applications\unpackimg.bat\shell\open\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.bat\" \"%%1\"" /f
-Reg.exe add "HKCR\Applications\undat.exe\shell\open\command" /ve /t REG_SZ /d "\"%CD%\undat.exe\" \"%%1\"" /f
-
 echo HKCU...
 Reg.exe add "HKCU\SOFTWARE\Classes\apk_auto_file\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\apk.ico,0" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\apk_auto_file\shell\open" /ve /t REG_SZ /d "Decompile" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\apk_auto_file\shell\open\command" /ve /t REG_SZ /d "\"%CD%\decompile.bat\" \"%%1\"" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\apk_auto_file\shell\Decompile to Java" /ve /t REG_SZ /d "Decompile to Java" /f
-Reg.exe add "HKCU\SOFTWARE\Classes\apk_auto_file\shell\Decompile to Java\command" /ve /t REG_SZ /d "\"%CD%\decompile.bat\" \"%%1\" \"-s\"" /f
+Reg.exe add "HKCU\SOFTWARE\Classes\apk_auto_file\shell\Decompile to Java\command" /ve /t REG_SZ /d "\"%CD%\dj.bat\" \"%%1\" \"-s\"" /f
+Reg.exe add "HKCU\SOFTWARE\Classes\apk_auto_file\shell\Sign" /ve /t REG_SZ /d "Sign" /f
+Reg.exe add "HKCU\SOFTWARE\Classes\apk_auto_file\shell\Sign\command" /ve /t REG_SZ /d "\"%CD%\signapk.bat\" \"%%1\" \"-s\"" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\dcf_auto_file\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\android-icon.ico,0" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\dcf_auto_file\shell\Compile and Clean" /ve /t REG_SZ /d "Compile and Clean" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\dcf_auto_file\shell\Compile and Clean\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-c\"" /f
@@ -204,48 +191,10 @@ Reg.exe add "HKCU\SOFTWARE\Classes\newimg\shell\open" /ve /t REG_SZ /d "Unpack" 
 Reg.exe add "HKCU\SOFTWARE\Classes\newimg\shell\open\command" /ve /t REG_SZ /d "\"%CD%\undat.exe\" \"%%1\"" /f
 
 Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.img\OpenWithList" /v "a" /t REG_SZ /d "unpackimg.bat" /f
-Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.img\OpenWithList" /v "b" /t REG_SZ /d "unpackimg.bat" /f
+Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.img\OpenWithList" /v "b" /t REG_SZ /d "repackimg.bat" /f
 Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.img\OpenWithList" /v "MRUList" /t REG_SZ /d "ba" /f
 Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.img\OpenWithProgids" /v "Windows.IsoFile" /t REG_NONE /d "" /f
-echo HKLM...
-Reg.exe add "HKLM\SOFTWARE\Classes\apk_auto_file\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\apk.ico,0" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\apk_auto_file\shell\open" /ve /t REG_SZ /d "Compile" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\apk_auto_file\shell\open\command" /ve /t REG_SZ /d "\"%CD%\decompile.bat\" \"%%1\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcf_auto_file\shell\Decompile to Java" /ve /t REG_SZ /d "Compile and Clean" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\apk_auto_file\shell\Decompile to java\command" /ve /t REG_SZ /d "\"%CD%\decompile.bat\" \"%%1\" \"-s\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\apk_auto_file\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\android-icon.ico,0" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcf_auto_file\shell\Compile and Clean" /ve /t REG_SZ /d "Compile and Clean" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcf_auto_file\shell\Compile and Clean\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-c\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcf_auto_file\shell\Compile and Sign" /ve /t REG_SZ /d "Compile And Sign" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcf_auto_file\shell\Compile and Sign\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-s\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcf_auto_file\shell\Compile_sign_clean" /ve /t REG_SZ /d "Compile/Sign/Clean" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcf_auto_file\shell\Compile_sign_clean\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-c\" \"-s\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcf_auto_file\shell\open" /ve /t REG_SZ /d "Compile" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcf_auto_file\shell\open\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dci_auto_file\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\android-icon.ico,0" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dci_auto_file\shell\Compile and Clean" /ve /t REG_SZ /d "Compile and Clean" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dci_auto_file\shell\Compile and Clean\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-c\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dci_auto_file\shell\open" /ve /t REG_SZ /d "Compile" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dci_auto_file\shell\open\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcp_auto_file\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\android-icon.ico,0" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcp_auto_file\shell\Compile and Clean" /ve /t REG_SZ /d "Compile and Clean" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcp_auto_file\shell\Compile and Clean\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-c\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcp_auto_file\shell\Compile and Sign" /ve /t REG_SZ /d "Compile and Sign" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcp_auto_file\shell\Compile and Sign\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-s\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcp_auto_file\shell\Compile_Sign_Clean" /ve /t REG_SZ /d "Compile/Sign/Clean" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcp_auto_file\shell\Compile_Sign_Clean\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\" \"-c\" \"-s\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcp_auto_file\shell\open" /ve /t REG_SZ /d "Compile" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\dcp_auto_file\shell\open\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\img_auto_file\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\boot.ico,0" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\img_auto_file\shell\Mount" /ve /t REG_SZ /d "Mount" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\img_auto_file\shell\Mount\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.bat\" \"%%1\" \"-m\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\img_auto_file\shell\open" /ve /t REG_SZ /d "Compile" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\img_auto_file\shell\open\command" /ve /t REG_SZ /d "\"%CD%\recompile.exe\" \"%%1\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\newimg\shell\open" /ve /t REG_SZ /d "Unpack" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\newimg\shell\open\command" /ve /t REG_SZ /d "\"%CD%\undat.exe\" \"%%1\"" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\jarfile\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\apk.ico,0" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\jarfile\shell\open" /ve /t REG_SZ /d "Decompile" /f
-Reg.exe add "HKLM\SOFTWARE\Classes\jarfile\shell\open\command" /ve /t REG_SZ /d "\"%CD%\decompile.bat\" \"%%1\"" /f
+
 if exist %localappdata%\IconCache.db (
 echo Clearing Icon Cache
 DEL "%localappdata%\IconCache.db" /A
