@@ -1,7 +1,7 @@
 @echo off
 java -jar %droidroot%\apktool.jar d -s -f %1
 for /f "delims=" %%a  in ("%1") do set "Extension=%%~xa"
-if /I "%Extension%"==".apk" (set outpath="%~dp1%~n1") else (set outpath="%~dp1%1.out")
+if /I "%Extension%"==".apk" (set outpath="%~dp1%~n1_j") else (set outpath="%~dp1%1.out_j")
 7za e %1 *.dex -y -o%outpath%\
 call apktool d -s -f %1
 cd %outpath%
