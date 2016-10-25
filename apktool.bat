@@ -1,3 +1,4 @@
 @echo off
 set PATH=%CD%;%PATH%;
-java -jar -Duser.language=en "%~dp0\apktool.jar" %1 %2 %3 %4 %5 %6 %7 %8 %9
+FOR /f "tokens=*" %%G IN ('dir /b %~dp0\apktool_*.jar') DO set APKTOOL=%%G
+java -jar -Duser.language=en "%~dp0\%APKTOOL%" %1 %2 %3 %4 %5 %6 %7 %8 %9
