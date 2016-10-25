@@ -2,7 +2,7 @@
 :::::::::::::::::::::::::::::::::::::::::
 :: Automatically check & get admin rights
 :::::::::::::::::::::::::::::::::::::::::
-CLS
+
 ECHO.
 ECHO =============================
 ECHO DroidShell Installer
@@ -33,10 +33,26 @@ exit /B
 ::::::::::::::::::::::::::::
 setlocal & pushd .
 
-
-REM Run shell as admin (example) - put here code as   like
 cd /d %~dp0/../
-echo %CD%
+
+IF EXIST %localappdata%\Android\sdk\platform-tools (goto sdkexist) else goto nosdk
+
+:sdkexist
+set tempvar="%localappdata%\Android\sdk\platform-tools"
+goto moveon
+:nosdk
+set tempvar="%CD%\platform_tools"
+:moveon
+set "tempvar=%tempvar:"=%"
+set adbpath=%tempvar%
+
+echo Creating Environment Variables (This takes a minute...)
+if not "%DROIDROOT%"=="%CD%" (SETX /m droidroot "%CD%")
+
+echo %adbpath%
+
+
+%droidroot%\install\setenv -a PATH "%PATH%;%droidroot%;%adbpath%;%programfiles%\OSFMount"
 
 if not exist "%programfiles%\Ext2Fsd" (
 	echo Ext2FSD not found, installing.
@@ -53,11 +69,11 @@ if not exist "%localappdata%\Programs\Python\Python35" (
 	"%~dp0\python-3.5.1-amd64.exe"
 ) else (echo Python already exists.)
 
-
-echo Creating Environment Variables (This takes a minute...)
-if not "%DROIDROOT%"=="%CD%" (SETX /m droidroot "%CD%")
-set "addpath"="%DROIDROOT%"
-%droidroot%\install\setenv -a PATH "%PATH%;%droidroot%;%programfiles%\OSFMount"
+if exist "%localappdata%\Android\sdk\platform-tools" (
+	set "adbpath="%localappdata%\Android\sdk\platform-tools"
+) else (set "adbpath="%droidroot%\platform_tools")
+echo %adbpath%
+pause
 
 echo Killing Explorer
 
@@ -178,6 +194,8 @@ Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\shell\Mount" /ve /t REG_SZ /d "
 Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\shell\Mount\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.bat\" \"%%1\" \"-m\"" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\shell\open" /ve /t REG_SZ /d "Compile" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\shell\open\command" /ve /t REG_SZ /d "\"%CD%\repackimg.bat\" \"%%1\"" /f
+Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\shell\Convert_Sparse" /ve /t REG_SZ /d "Converte sparse image" /f
+Reg.exe add "HKCU\SOFTWARE\Classes\img_auto_file\shell\Convert_Sparse\command" /ve /t REG_SZ /d "\"%CD%\simgconvert.bat\" \"%%1\"" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\jarfile\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\apk.ico,0" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\jarfile\shell\open" /ve /t REG_SZ /d "Decompile" /f
 Reg.exe add "HKCU\SOFTWARE\Classes\jarfile\shell\open\command" /ve /t REG_SZ /d "\"%CD%\decompile.bat\" \"%%1\"" /f
