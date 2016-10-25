@@ -1,0 +1,1 @@
+%droidroot%\simg2img.exe %1 %~dp1%~n1-ext4.img
