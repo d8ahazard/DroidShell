@@ -1,21 +1,63 @@
+@ECHO OFF
 set CYGWIN=nodosfilewarning
 set hideErrors=n
 set rompath=%~dp1
-%~d0
-cd "%~p0"
 if "%~1" == "" goto noargs
 set "file=%~f1"
+set "fullpath=%1"
+set "originalfilename=%~n1"
 set bin=%droidroot%\android_win_tools
 set "errout= "
 if "%hideErrors%" == "y" set "errout=2>nul"
-echo Well, this works > C:\droidshell\log.txt
-echo Android Image Kitchen - UnpackImg Script
+echo Droidshell Image Upacker
+echo based on Android Image Kitchen
 echo by osm0sis @ xda-developers
-echo.
-
+echo roided out by Digitalhigh
+cd %rompath%
 echo Supplied image: %~nx1
-echo.
+echo Full path is: %1 or %fullpath%
 
+set "line=%~nx1"
+setlocal enabledelayedexpansion
+
+set "pattern=system"
+if "!line:%pattern%=!"=="!line!" (
+	goto sysimg
+)
+
+set "pattern=data"
+if "!line:%pattern%=!"=="!line!" (
+	goto sysimg
+)
+
+set "pattern=vendor"
+if "!line:%pattern%=!"=="!line!" (
+	goto sysimg
+)
+
+set "pattern=TWRP"
+if "!line:%pattern%=!"=="!line!" (
+	goto bootimg
+)
+
+set "pattern=CWM"
+if "!line:%pattern%=!"=="!line!" (
+	goto bootimg
+)
+
+set "pattern=recovery"
+if "!line:%pattern%=!"=="!line!" (
+	goto bootimg
+)
+
+set "pattern=boot"
+if "!line:%pattern%=!"=="!line!" (
+	goto bootimg
+)
+goto :EOF
+
+:bootimg
+endlocal
 if exist %rompath%%~n1\split_img\nul set "noclean=1"
 if exist %rompath%%~n1\ramdisk\nul set "noclean=1"
 if not "%noclean%" == "1" goto noclean
@@ -47,7 +89,7 @@ if "%ramdiskcomp%" == "lz4" ( set "unpackcmd=lz4" & set "extra=stdout 2>nul" & s
 ren *ramdisk.gz *ramdisk.cpio.%compext%
 cd ..
 
-echo Unpacking ramdisk to "/ramdisk/" . . .
+echo Unpacking ramdisk . . .
 echo.
 cd ramdisk
 echo Compression used: %ramdiskcomp%
@@ -66,11 +108,58 @@ echo %~dp1%~n1 > %~dp1\%~n1.dci
 echo Done!
 goto end
 
-:noargs
-echo No image file supplied.
+:sysimg
+endlocal
+echo Trying to unpack %~nx1.
+SET HOUR=%time:~-11,2%
+Call :TRIM %HOUR%
+GOTO EOT
+:TRIM
+Set HOUR=%*
+:EOT
 
-:error
-echo Error!
+SET DATESTMP=%date:~-4,4%%date:~-10,2%%date:~-7,2%%HOUR%
+SET FILENAME=%originalfilename%_%DATESTMP%
+if exist %ROMPATH%%FILENAME% (
+	echo Looks like we extracted this already today, appending time stamp.
+	SET FILENAME=%originalfilename%_%DATESTMP%_%time:~-8,2%%time:~-5,2%
+)
+echo %1 %FILENAME% %DATESTMP% %originalfilename%
+mkdir "%ROMPATH%%FILENAME%"
+%droidroot%\Imgextractor.exe %fullpath% "%rompath%%filename%" -i
+if exist %rompath%%filename%_statfile.txt goto SUCCESS
+
+:SUCCESS
+
+echo set WshShell = WScript.CreateObject("WScript.Shell") > %tmp%\tmp.vbs
+echo WScript.Quit (WshShell.Popup( "System image extracted to %rompath%%filename%." ,5 ,"Success!", 0 + 64)) >> %tmp%\tmp.vbs
+cscript /nologo %tmp%\tmp.vbs
+if %errorlevel%==1 (
+  echo Closing
+) 
+del %tmp%\tmp.vbs
+EXIT /b 0
+
+:SUCCESS2
+echo set WshShell = WScript.CreateObject("WScript.Shell") > %tmp%\tmp.vbs
+echo WScript.Quit (WshShell.Popup( "Boot image extracted!" ,5 ,"Success!", 0 + 64)) >> %tmp%\tmp.vbs
+cscript /nologo %tmp%\tmp.vbs
+if %errorlevel%==1 (
+  echo Closing
+) 
+del %tmp%\tmp.vbs
+exit /b 0
+
+:NOARGS
+echo set WshShell = WScript.CreateObject("WScript.Shell") > %tmp%\tmp.vbs
+echo WScript.Quit (WshShell.Popup( "No image specified.  I can't just make one up, you know." ,5 ,"Mount failed!", 0 + 48)) >> %tmp%\tmp.vbs
+cscript /nologo %tmp%\tmp.vbs
+if %errorlevel%==1 (
+  echo Closing
+) 
+del %tmp%\tmp.vbs
+exit /b 1
+
 
 :end
 echo.
