@@ -1,8 +1,0 @@
-Error Opening \\.\PhysicalDrive1. Error Code 2
-No of disks 1
-Scanning \\.\PhysicalDrive0
-index 0 ID 7 size 204800 
-index 1 ID 7 size 249860096 
-Partition Table Error on C:/Gits/angler-npf10c/system.img
-Invalid End of sector markerBad Super Block. The drive  is not ext2 formatted.
-No valid Ext2 Partitions found in the disk image.
