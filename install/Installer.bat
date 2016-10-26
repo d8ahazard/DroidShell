@@ -35,25 +35,26 @@ setlocal & pushd .
 
 cd /d %~dp0/../
 
-echo Searching users directory for android SDK Manager.
-for /r C:\users %%a in (*.txt) do if "%%~nxa"=="SDK Readme.txt" set p=%%~dpa
+echo Searching user directory for android SDK.
+for /r %homepath% %%a in (*.txt) do if "%%~nxa"=="SDK Readme.txt" set p=%%~dpa
 if defined p (
-echo Sdk manager found! at %p%
+echo Sdk found in %p%.
 set tempvar=%p%
 goto moveon
 ) 
 
-:FULLSEARCH
-echo SDK Manager not found, doing a full search. (Be patient, this takes a moment)
+echo SDK not found in users directory, doing a full search. (Be patient, this takes a moment)
 for /r C:\ %%a in (*.txt) do if "%%~nxa"=="SDK Readme.txt" set p=%%~dpa
 if defined p (
-echo Sdk manager found! at %p%
+echo Sdk found in %p%.
 set tempvar=%p%
 goto moveon
 )
 
 :nosdk
-set tempvar="%CD%\platform_tools"
+echo SDK not found, downloading platform-tools.  Please accept the license in a few moments.
+.\sdk_tools\android update sdk --no-ui --filter platform-tools
+if exist %cd%\platform-tools (set tempvar="%CD%\platform-tools")
 
 :moveon
 set "tempvar=%tempvar:"=%"
@@ -64,7 +65,6 @@ if not "%DROIDROOT%"=="%CD%" (SETX /m droidroot "%CD%")
 
 echo %adbpath%
 
-
 %droidroot%\install\setenv -a PATH "%PATH%;%droidroot%;%adbpath%;%programfiles%\OSFMount"
 
 if not exist "%localappdata%\Programs\Python\Python35" (
@@ -72,12 +72,16 @@ if not exist "%localappdata%\Programs\Python\Python35" (
 	"%~dp0\python-3.5.1-amd64.exe"
 ) else (echo Python already exists.)
 
-if exist "%localappdata%\Android\sdk\platform-tools" (
-	set "adbpath="%localappdata%\Android\sdk\platform-tools"
-) else (set "adbpath="%droidroot%\platform_tools")
-echo %adbpath%
-pause
+if not exist "%programfiles%\grepWin" (
+	echo GrepWin not found, installing.
+	"%~dp0\grepWin-1.6.15-x64.msi /q"
+) else (echo GrepWin is already installed.)
 
+if not exist "%programfiles%\Beyond Compare 4" (
+	echo Beyond Compare not found, installing.
+	wget http://www.scootersoftware.com/BCompare-4.1.9.21719_x64.msi
+	"%~\dp0\Bcompare-4.1.9.21719_x64.msi /q"
+)
 echo Killing Explorer
 
 %systemroot%\system32\taskkill /IM explorer.exe /F
