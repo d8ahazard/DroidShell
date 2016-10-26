@@ -35,13 +35,26 @@ setlocal & pushd .
 
 cd /d %~dp0/../
 
-IF EXIST %localappdata%\Android\sdk\platform-tools (goto sdkexist) else goto nosdk
-
-:sdkexist
-set tempvar="%localappdata%\Android\sdk\platform-tools"
+echo Searching users directory for android SDK Manager.
+for /r C:\users %%a in (*.txt) do if "%%~nxa"=="SDK Readme.txt" set p=%%~dpa
+if defined p (
+echo Sdk manager found! at %p%
+set tempvar=%p%
 goto moveon
+) 
+
+:FULLSEARCH
+echo SDK Manager not found, doing a full search. (Be patient, this takes a moment)
+for /r C:\ %%a in (*.txt) do if "%%~nxa"=="SDK Readme.txt" set p=%%~dpa
+if defined p (
+echo Sdk manager found! at %p%
+set tempvar=%p%
+goto moveon
+)
+
 :nosdk
 set tempvar="%CD%\platform_tools"
+
 :moveon
 set "tempvar=%tempvar:"=%"
 set adbpath=%tempvar%
@@ -67,7 +80,7 @@ pause
 
 echo Killing Explorer
 
-taskkill /IM explorer.exe /F
+%systemroot%\system32\taskkill /IM explorer.exe /F
 echo Deleting current user settings.
 echo Some errors here are normal.
 
