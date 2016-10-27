@@ -127,38 +127,34 @@ if exist %ROMPATH%%FILENAME% (
 echo %1 %FILENAME% %DATESTMP% %originalfilename%
 mkdir "%ROMPATH%%FILENAME%"
 %droidroot%\Imgextractor.exe %fullpath% "%rompath%%filename%" -i
-if exist %rompath%%filename%_statfile.txt goto SUCCESS
+
+if exist %rompath%%filename%_statfile.txt (
+	mv %rompath%%filename%_statfile.txt %ROMPATH%%FILENAME%\%ROMPATH%%FILENAME%_statfile.txt
+	goto SUCCESS
+)
 
 :SUCCESS
 
 echo set WshShell = WScript.CreateObject("WScript.Shell") > %tmp%\tmp.vbs
 echo WScript.Quit (WshShell.Popup( "System image extracted to %rompath%%filename%." ,5 ,"Success!", 0 + 64)) >> %tmp%\tmp.vbs
 cscript /nologo %tmp%\tmp.vbs
-if %errorlevel%==1 (
-  echo Closing
-) 
 del %tmp%\tmp.vbs
+goto end
 EXIT /b 0
 
 :SUCCESS2
 echo set WshShell = WScript.CreateObject("WScript.Shell") > %tmp%\tmp.vbs
 echo WScript.Quit (WshShell.Popup( "Boot image extracted!" ,5 ,"Success!", 0 + 64)) >> %tmp%\tmp.vbs
 cscript /nologo %tmp%\tmp.vbs
-if %errorlevel%==1 (
-  echo Closing
-) 
 del %tmp%\tmp.vbs
-exit /b 0
+goto end
 
 :NOARGS
 echo set WshShell = WScript.CreateObject("WScript.Shell") > %tmp%\tmp.vbs
 echo WScript.Quit (WshShell.Popup( "No image specified.  I can't just make one up, you know." ,5 ,"Mount failed!", 0 + 48)) >> %tmp%\tmp.vbs
 cscript /nologo %tmp%\tmp.vbs
-if %errorlevel%==1 (
-  echo Closing
-) 
 del %tmp%\tmp.vbs
-exit /b 1
+goto end
 
 
 :end

@@ -35,37 +35,48 @@ setlocal & pushd .
 
 cd /d %~dp0/../
 
-echo Searching user directory for android SDK.
-for /r %homepath% %%a in (*.txt) do if "%%~nxa"=="SDK Readme.txt" set p=%%~dpa
+echo Searching for android SDK in C:\users.
+for  /f "delims=" %%a in ('dir /b /s /a:d "C:\users\" ^|%systemroot%\system32\findstr /e /i "\Android\sdk"') do (
+	if not exist %%a\aapt.py set p=%%a
+)
+
 if defined p (
-echo Sdk found in %p%.
-set tempvar=%p%
-goto moveon
-) 
+	echo Sdk found in %p%.
+	goto moveon
+)
 
 echo SDK not found in users directory, doing a full search. (Be patient, this takes a moment)
-for /r C:\ %%a in (*.txt) do if "%%~nxa"=="SDK Readme.txt" set p=%%~dpa
+for  /f "delims=" %%a in ('dir /b /s /a:d "C:\" ^|%systemroot%\system32\findstr /e /i "\Android\sdk"') do (
+  	if not exist %%a\aapt.py set p=%%a
+)
+
 if defined p (
-echo Sdk found in %p%.
-set tempvar=%p%
-goto moveon
+	echo Sdk found in %p%.
+	goto moveon
 )
 
 :nosdk
 echo SDK not found, downloading platform-tools.  Please accept the license in a few moments.
 .\sdk_tools\android update sdk --no-ui --filter platform-tools
-if exist %cd%\platform-tools (set tempvar="%CD%\platform-tools")
+if exist %cd%\platform-tools (set adbpath="%CD%\platform-tools")
+else (echo Error installing platform-tools, please check your internet connection and try again.)
 
 :moveon
-set "tempvar=%tempvar:"=%"
-set adbpath=%tempvar%
-
-echo Creating Environment Variables (This takes a minute...)
-if not "%DROIDROOT%"=="%CD%" (SETX /m droidroot "%CD%")
-
+set adbpath=%p%
 echo %adbpath%
 
-%droidroot%\install\setenv -a PATH "%PATH%;%droidroot%;%adbpath%;%programfiles%\OSFMount"
+
+echo Creating Environment Variables (This takes a minute...)
+
+if not defined path_backup (
+	echo Creating backup of default path
+	SETX /M path_backup "%PATH%"
+)
+
+SETX /M droidroot "%CD%"
+SETX /M adbpath "%adbpath%"
+echo Setting path to "%PATH%;%droidroot%;%adbpath%"
+SETX /M PATH "%PATH%;%droidroot%,%adbpath%"
 
 if not exist "%localappdata%\Programs\Python\Python35" (
 	echo Python not found, installing.
@@ -80,11 +91,13 @@ if not exist "%programfiles%\grepWin" (
 if not exist "%programfiles%\Beyond Compare 4" (
 	echo Beyond Compare not found, installing.
 	wget http://www.scootersoftware.com/BCompare-4.1.9.21719_x64.msi
-	"%~\dp0\Bcompare-4.1.9.21719_x64.msi /q"
+	"%~dp0\Bcompare-4.1.9.21719_x64.msi /q"
 )
-echo Killing Explorer
+
+echo Killing Explorer.
 
 %systemroot%\system32\taskkill /IM explorer.exe /F
+
 echo Deleting current user settings.
 echo Some errors here are normal.
 
@@ -121,28 +134,34 @@ echo Some errors here are normal.
 %systemroot%\system32\reg delete HKCU\SOFTWARE\Classes\jarfile\ /va /f
 %systemroot%\system32\reg delete HKCU\SOFTWARE\Classes\newimg\ /va /f
 
-Echo deleting old associations (if any)
-Echo Errors here are not unusual
+Echo deleting old associations (if any).
+Echo Errors here are not unusual.
 ftype jarfile=
 ftype apk_auto_file=
 ftype dcf_auto_file=
 ftype dcp_auto_file=
 ftype dci_auto_file=
 ftype img_auto_file=
+ftype elf_auto_file=
 ftype newimg=
 
-echo Making some associations
+echo Making some associations.
 assoc .jar=jarfile
 assoc .img=img_auto_file
 assoc .apk=apk_auto_file
 assoc .dcf=dcf_auto_file
 assoc .dci=dci_auto_file
 assoc .dcp=dcp_auto_file
+assoc .so=elf_auto_file
 assoc .list=newimg
 
-if exist "C:\Program Files (x86)\Notepad++\Notepad++.exe" (
+if exist "%PROGRAMFILES(X86)%\Notepad++\" (
 
-	echo Notepad++ found, associating.
+	echo NPP found, associating.
+	
+	ftype nppfile=
+	%systemroot%\system32\reg add "HKCR\nppfile\DefaultIcon" /ve /t REG_SZ /d "C:\Program Files (x86)\Notepad++\notepad++.exe,0" /f
+	%systemroot%\system32\reg add "HKCR\nppfile\Shell\Open\Command" /ve /t REG_EXPAND_SZ /d "C:\Program Files (x86)\Notepad++\notepad++.exe ELEV\" /f
 	Assoc .xml=nppfile
 	Assoc .prop=nppfile
 	Assoc .conf=nppfile
@@ -150,24 +169,29 @@ if exist "C:\Program Files (x86)\Notepad++\Notepad++.exe" (
 	Assoc .smali=nppfile
 	Assoc .lca=nppfile
 	Assoc .log=nppfile
-	ftype nppfile="C:\Program Files (x86)\Notepad++\notepad++.exe %1"
 	echo Copying Custom Languages
 	copy "%~dp0\UserDefinelang.xml" "%appdata%\Notepad++\UserDefinelang.xml"
 
 )
 
-echo Importing registry associations
+
+echo Importing registry associations.
+echo HKCR...
+
 %systemroot%\system32\reg add "HKCR\.apk" /ve /t REG_SZ /d "apk_auto_file" /f
 %systemroot%\system32\reg add "HKCR\.dcf" /ve /t REG_SZ /d "dcf_auto_file" /f
 %systemroot%\system32\reg add "HKCR\.dci" /ve /t REG_SZ /d "dci_auto_file" /f
 %systemroot%\system32\reg add "HKCR\.dcp" /ve /t REG_SZ /d "dcp_auto_file" /f
 %systemroot%\system32\reg add "HKCR\.img" /ve /t REG_SZ /d "img_auto_file" /f
+%systemroot%\system32\reg add "HKCR\.so" /ve /t REG_SZ /d "elf_auto_file" /f
 %systemroot%\system32\reg add "HKCR\.jar" /ve /t REG_SZ /d "jarfile" /f
 %systemroot%\system32\reg add "HKCR\.list" /ve /t REG_SZ /d "newimg" /f
 
-echo HKCR...
 %systemroot%\system32\reg add "HKCR\Applications\unpackimg.bat\DefaultIcon" /ve /t REG_SZ /d "C:\DroidShell\install\dat.ico,0" /f
 %systemroot%\system32\reg add "HKCR\Applications\unpackimg.bat\shell\open\command" /ve /t REG_SZ /d "\"C:\DroidShell\unpackimg.bat\" \"%%1\"" /f
+
+%systemroot%\system32\reg add "HKCR\Applications\libdepends.bat\DefaultIcon" /ve /t REG_SZ /d "C:\DroidShell\install\lib.ico,0" /f
+%systemroot%\system32\reg add "HKCR\Applications\libdepends.bat\shell\open\command" /ve /t REG_SZ /d "\"C:\DroidShell\libdepends.bat\" \"%%1\"" /f
 
 %systemroot%\system32\reg add "HKCR\jarfile" /ve /t REG_SZ /d "Executable Jar File" /f
 %systemroot%\system32\reg add "HKCR\jarfile\DefaultIcon" /ve /t REG_SZ /d "C:\DroidShell\install\jar.ico,0" /f
@@ -213,6 +237,10 @@ echo HKCU...
 %systemroot%\system32\reg add "HKCU\SOFTWARE\Classes\img_auto_file\shell\Extract" /ve /t REG_SZ /d "Mount" /f
 %systemroot%\system32\reg add "HKCU\SOFTWARE\Classes\img_auto_file\shell\Extract\command" /ve /t REG_SZ /d "\"%CD%\unpackimg.bat\" \"%%1\" \"-m\"" /f
 
+%systemroot%\system32\reg add "HKCU\SOFTWARE\Classes\elf_auto_file\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\lib.ico,0" /f
+%systemroot%\system32\reg add "HKCU\SOFTWARE\Classes\elf_auto_file\shell\Examine" /ve /t REG_SZ /d "Examine" /f
+%systemroot%\system32\reg add "HKCU\SOFTWARE\Classes\elf_auto_file\shell\Examine\command" /ve /t REG_SZ /d "\"%CD%\libdepends.bat\" \"%%1\" \"-m\"" /f
+
 %systemroot%\system32\reg add "HKCU\SOFTWARE\Classes\jarfile\DefaultIcon" /ve /t REG_SZ /d "%CD%\install\jar.ico,0" /f
 %systemroot%\system32\reg add "HKCU\SOFTWARE\Classes\jarfile\shell\open" /ve /t REG_SZ /d "Decompile" /f
 %systemroot%\system32\reg add "HKCU\SOFTWARE\Classes\jarfile\shell\open\command" /ve /t REG_SZ /d "\"%CD%\decompile.bat\" \"%%1\"" /f
@@ -224,10 +252,10 @@ echo HKCU...
 %systemroot%\system32\reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.dci\OpenWithList" /v "b" /t REG_SZ /d "repackimg.bat" /f
 
 if exist %localappdata%\IconCache.db (
-echo Clearing Icon Cache
+echo Clearing Icon Cache.
 DEL "%localappdata%\IconCache.db" /A
 )
-echo Restarting Explorer
+echo Restarting Explorer.
 start explorer.exe
 echo Success!  A reboot may be necessary now.
 pause
