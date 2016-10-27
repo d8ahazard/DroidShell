@@ -1,1 +1,0 @@
-call python %~dp0coloredlogcat.py
